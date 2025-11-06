@@ -1,1 +1,25 @@
+---
+- name: create new epg
+  hosts: apic
+  connection: local
+  collections:
+    - cisco.aci
 
+  vars:
+    new_tenant: "Tenant1"
+    state: "present"
+    new_epg: "EPG_web"
+    new_ap: "AP_web"
+
+tasks:
+    - name: Create a new epg
+      cisco.aci.aci_epg:
+        host: "{{ ansible_hostname }}"
+        username: "{{ ansible_username }}"
+        password: "{{ ansible_password }}"
+        tenant: "{{ new_tenant }}"
+        ap: "{{ new_ap }}"
+        epg: "{{ new_epg }}"
+        state: "{{ state }}"
+        validate_certs: false
+        description: "{{ new_epg }} is created using ansible"
