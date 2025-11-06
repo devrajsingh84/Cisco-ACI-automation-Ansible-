@@ -1,0 +1,30 @@
+---
+- name: add subnet in BD
+  hosts: apic
+  connection: local
+  collections:
+    - cisco.aci
+
+
+  vars:
+    new_tenant: "Tenant1"
+    state: "present"
+    new_epg: "EPG_web"
+    new_ap: "AP_web"
+    new_vrf: "VRF_web"
+    new_bd: "BD_web"
+
+  tasks:
+    - name: Add subnet to Bridge Domain
+      cisco.aci.aci_bd_subnet:
+        host: "{{ ansible_hostname }}"
+        username: "{{ ansible_username }}"
+        password: "{{ ansible_password }}"
+        validate_certs: no
+        tenant: "{{ new_tenant }}"
+        bd: "{{ new_bd }}"
+        gateway: "10.10.10.1"
+        mask: "24"
+        scope: "public"
+        description: "Subnet for ExampleBD"
+        state: "{{ state }}"
