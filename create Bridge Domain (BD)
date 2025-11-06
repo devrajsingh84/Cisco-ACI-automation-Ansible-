@@ -1,0 +1,28 @@
+---
+- name: create new bridge domain
+  hosts: apic
+  connection: local
+  collections:
+    - cisco.aci
+
+
+  vars:
+    new_tenant: "Tenant1"
+    state: "present"
+    new_epg: "EPG_web"
+    new_ap: "AP_web"
+    new_vrf: "VRF_web"
+    new_bd: "BD_web"
+
+  tasks:
+    - name: Create a new bd
+      cisco.aci.aci_bd:
+        host: "{{ ansible_hostname }}"
+        username: "{{ ansible_username }}"
+        password: "{{ ansible_password }}"
+        tenant: "{{ new_tenant }}"
+        bd: "{{ new_bd }}"
+        vrf: "{{ new_vrf }}"
+        state: "{{ state }}"
+        validate_certs: false
+        description: "{{ new_bd }} is created using ansible"
