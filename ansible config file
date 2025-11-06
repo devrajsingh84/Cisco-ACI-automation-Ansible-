@@ -1,0 +1,3 @@
+[defaults]
+inventory = /home/devraj/aci/hosts
+gathering = explicit
