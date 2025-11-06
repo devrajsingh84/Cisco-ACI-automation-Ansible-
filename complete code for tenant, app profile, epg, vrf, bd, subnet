@@ -1,0 +1,87 @@
+---
+- name: Our first playbook
+  hosts: apic
+  connection: local
+  collections:
+    - cisco.aci
+
+
+  vars:
+    new_tenant: "Tenant1"
+    state: "present"
+    new_epg: "EPG_xyx"
+    new_ap: "AP_xyz"
+    new_vrf: "VRF_xyz"
+    new_bd: "BD_xyz"
+
+  tasks:
+    - name: Create a new tenant
+      cisco.aci.aci_tenant:
+        host: "{{ ansible_hostname }}"
+        username: "{{ ansible_username }}"
+        password: "{{ ansible_password }}"
+        tenant: "{{ new_tenant }}"
+        state: "{{ state }}"
+        validate_certs: false
+        description: "{{ new_tenant }} is created using ansible"
+
+    - name: Create a new ap
+      cisco.aci.aci_ap:
+        host: "{{ ansible_hostname }}"
+        username: "{{ ansible_username }}"
+        password: "{{ ansible_password }}"
+        tenant: "{{ new_tenant }}"
+        ap: "{{ new_ap }}"
+        state: "{{ state }}"
+        validate_certs: false
+        description: "{{ new_ap }} is created using ansible"
+
+    - name: Create a new epg
+      cisco.aci.aci_epg:
+        host: "{{ ansible_hostname }}"
+        username: "{{ ansible_username }}"
+        password: "{{ ansible_password }}"
+        tenant: "{{ new_tenant }}"
+        ap: "{{ new_ap }}"
+        epg: "{{ new_epg }}"
+        state: "{{ state }}"
+        validate_certs: false
+        description: "{{ new_epg }} is created using ansible"
+
+    - name: Create a new vrf
+      cisco.aci.aci_vrf:
+        host: "{{ ansible_hostname }}"
+        username: "{{ ansible_username }}"
+        password: "{{ ansible_password }}"
+        tenant: "{{ new_tenant }}"
+        vrf: "{{ new_vrf }}"
+        state: "{{ state }}"
+        validate_certs: false
+        description: "{{ new_vrf }} is created using ansible"
+
+
+    - name: Create a new bd
+      cisco.aci.aci_bd:
+        host: "{{ ansible_hostname }}"
+        username: "{{ ansible_username }}"
+        password: "{{ ansible_password }}"
+        tenant: "{{ new_tenant }}"
+        bd: "{{ new_bd }}"
+        vrf: "{{ new_vrf }}"
+        state: "{{ state }}"
+        validate_certs: false
+        description: "{{ new_bd }} is created using ansible"
+
+    - name: Add subnet to Bridge Domain
+      cisco.aci.aci_bd_subnet:
+        host: "{{ ansible_hostname }}"
+        username: "{{ ansible_username }}"
+        password: "{{ ansible_password }}"
+        validate_certs: no
+        tenant: "{{ new_tenant }}"
+        bd: "{{ new_bd }}"
+        gateway: "10.10.10.1"
+        mask: "24"
+        scope: "public"
+        description: "Subnet for ExampleBD"
+        state: "{{ state }}"
