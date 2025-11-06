@@ -1,0 +1,23 @@
+---
+- name: create new tenant
+  hosts: apic
+  connection: local
+  collections:
+    - cisco.aci
+
+
+  vars:
+    new_tenant: "Tenant1"
+    state: "present"
+    new_ap: "AP_web"
+
+  - name: Create a new app profile
+      cisco.aci.aci_ap:
+        host: "{{ ansible_hostname }}"
+        username: "{{ ansible_username }}"
+        password: "{{ ansible_password }}"
+        tenant: "{{ new_tenant }}"
+        ap: "{{ new_ap }}"
+        state: "{{ state }}"
+        validate_certs: false
+        description: "{{ new_ap }} is created using ansible"
