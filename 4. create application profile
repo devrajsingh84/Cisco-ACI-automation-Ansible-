@@ -1,17 +1,12 @@
 ---
-- name: create new tenant
+- name: create new app profile
   hosts: apic
   connection: local
   collections:
     - cisco.aci
 
-
-  vars:
-    new_tenant: "Tenant1"
-    state: "present"
-    new_ap: "AP_web"
-
-  - name: Create a new app profile
+  tasks:
+    - name: Create a new ap
       cisco.aci.aci_ap:
         host: "{{ ansible_hostname }}"
         username: "{{ ansible_username }}"
