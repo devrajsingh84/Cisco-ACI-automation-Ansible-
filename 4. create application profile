@@ -4,9 +4,14 @@
   connection: local
   collections:
     - cisco.aci
+  vars:
+    new_tenant: "Tenant1"
+    state: "present"
+    new_epg: "EPG_web"
+    new_ap: "AP_web"
 
   tasks:
-    - name: Create a new ap
+    - name: Create a new app profile
       cisco.aci.aci_ap:
         host: "{{ ansible_hostname }}"
         username: "{{ ansible_username }}"
