@@ -1,0 +1,25 @@
+---
+- name: create vrf
+  hosts: apic
+  connection: local
+  collections:
+    - cisco.aci
+
+  vars:
+    new_tenant: "Tenant1"
+    state: "present"
+    new_epg: "EPG_web"
+    new_ap: "AP_web"
+    new_vrf: "VRF_web"
+
+  tasks:
+    - name: Create a new vrf
+      cisco.aci.aci_vrf:
+        host: "{{ ansible_hostname }}"
+        username: "{{ ansible_username }}"
+        password: "{{ ansible_password }}"
+        tenant: "{{ new_tenant }}"
+        vrf: "{{ new_vrf }}"
+        state: "{{ state }}"
+        validate_certs: false
+        description: "{{ new_vrf }} is created using ansible"
