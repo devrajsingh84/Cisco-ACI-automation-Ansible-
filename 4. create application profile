@@ -7,7 +7,6 @@
   vars:
     new_tenant: "Tenant1"
     state: "present"
-    new_epg: "EPG_web"
     new_ap: "AP_web"
 
   tasks:
