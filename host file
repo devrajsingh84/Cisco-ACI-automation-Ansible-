@@ -1,0 +1,7 @@
+[apic]
+apic-1
+
+[apic:vars]
+ansible_hostname = 131.226.217.153
+ansible_username = admin
+ansible_password = !v3G@!4@Y
