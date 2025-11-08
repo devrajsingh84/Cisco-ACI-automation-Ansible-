@@ -1,0 +1,23 @@
+#In this section we will create two separate variable files. One will define ACI objects and second one is for host.
+#CREATE ONE FOLDER "VARS"
+
+  
+mkdir vars
+  cd vars
+  
+devraj@DESKTOP-VSU0S4V:~/aci/vars$ nano host_vars.yml
+---
+ansible_hostname: "131.226.217.153"
+ansible_username: "admin"
+ansible_password: "!v3G@!4@Y"
+# save it
+
+devraj@DESKTOP-VSU0S4V:~/aci/vars$ nano aci_objects.yml
+---
+new_tenant: "Tenant1"
+state: "present"
+new_epg: "EPG_xyx"
+new_ap: "AP_xyz"
+new_vrf: "VRF_xyz"
+new_bd: "BD_xyz"
+# save it
