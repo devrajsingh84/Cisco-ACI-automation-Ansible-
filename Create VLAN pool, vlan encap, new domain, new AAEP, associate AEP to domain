@@ -1,0 +1,83 @@
+---
+- name: Add VLAN pool
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    ansible_hostname: "#your hostname or IP"
+    ansible_username: "#your username"
+    ansible_password: "#your password"
+    state: "present"
+    validate_certs: "false"
+
+  tasks:
+  - name: Add VLAN pool
+    cisco.aci.aci_vlan_pool:
+      host: "{{ansible_hostname}}"
+      username: "{{ansible_username}}"
+      password: "{{ansible_password}}"
+      state: "{{state}}"
+      validate_certs: "{{validate_certs}}"
+      pool: production
+      pool_allocation_mode: static
+      description: Production VLANs
+
+
+  - name: Add a new VLAN encap block
+    cisco.aci.aci_vlan_pool_encap_block:
+      host: "{{ansible_hostname}}"
+      username: "{{ansible_username}}"
+      password: "{{ansible_password}}"
+      state: "{{state}}"
+      validate_certs: "{{validate_certs}}"
+      pool: production
+      pool_allocation_mode: static
+      block_start: 20
+      block_end: 50
+
+  - name: Add a new domain
+    cisco.aci.aci_domain:
+      host: "{{ansible_hostname}}"
+      username: "{{ansible_username}}"
+      password: "{{ansible_password}}"
+      state: "{{state}}"
+      validate_certs: "{{validate_certs}}"
+      domain: phys_dom
+      domain_type: phys
+
+  - name: Bind a physical domain to VLAN pool
+    cisco.aci.aci_domain_to_vlan_pool:
+      host: "{{ansible_hostname}}"
+      username: "{{ansible_username}}"
+      password: "{{ansible_password}}"
+      state: "{{state}}"
+      validate_certs: "{{validate_certs}}"
+      domain: phys_dom
+      domain_type: phys
+      pool: production
+      pool_allocation_mode: static
+
+  - name: Add a new AEP
+    cisco.aci.aci_aep:
+      host: "{{ansible_hostname}}"
+      username: "{{ansible_username}}"
+      password: "{{ansible_password}}"
+      state: "{{state}}"
+      validate_certs: "{{validate_certs}}"
+      aep: ACI-AEP
+      description: default
+      infra_vlan: true
+
+
+  - name: Add AEP to domain binding
+    cisco.aci.aci_aep_to_domain: &binding_present
+      host: "{{ansible_hostname}}"
+      username: "{{ansible_username}}"
+      password: "{{ansible_password}}"
+      state: "{{state}}"
+      validate_certs: "{{validate_certs}}"
+      aep: ACI-AEP
+      domain: phys_dom
+      domain_type: phys
+
