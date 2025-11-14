@@ -1,10 +1,32 @@
+#########################################
+devraj@DESKTOP-VSU0S4V:~/aci/vars$ cat aci_objects.yml
+---
+new_tenant: "Tenant1"
+state: "present"
+new_epg: "EPG_xyx"
+new_ap: "AP_xyz"
+new_vrf: "VRF_xyz"
+new_bd: "BD_xyz"
+filter_name: "Web_Filter"
+entry_name: "HTTP_Entry"
+validate_certs: "false"
+
+#######################################
+
+devraj@DESKTOP-VSU0S4V:~/aci/vars$ cat host_vars.yml
+---
+ansible_hostname: "192.168.84.10"
+ansible_username: "admin"
+ansible_password: "cisco123"
+######################################
+
 ---
 - name: using anchors playbook
   hosts: localhost
   connection: local
   
   vars:
-    aci_common_vars: &aci_vars
+    aci_common_vars: &aci_vars #this is being used for anchor
         host: "{{ ansible_hostname }}"
         username: "{{ ansible_username }}"
         password: "{{ ansible_password }}"
