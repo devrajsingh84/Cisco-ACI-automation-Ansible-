@@ -1,0 +1,72 @@
+---
+- name: using anchors playbook
+  hosts: localhost
+  connection: local
+  
+  module_defaults:
+    group/cisco.aci.all:
+      host: "{{ ansible_hostname }}"
+      username: "{{ ansible_username }}"
+      password: "{{ ansible_password }}"
+      tenant: "{{ new_tenant }}"
+      state: "{{ state }}"
+      validate_certs: "{{ validate_certs }}"
+
+  vars_files:
+    - ./vars/aci_objects.yml
+    - ./vars/host_vars.yml
+  
+  vars_prompt:
+  - name: "host"
+    prompt: "Enter the IP address of the APIC"
+    default: "192.168.84.10"
+    private: no
+
+  - name: "username"
+    prompt: "Enter the APIC username"
+    default: "admin"
+    private: no
+
+  - name: "password"
+    prompt: "Enter the APIC password"
+    private: yes
+
+  tasks:
+    - name: Create a new tenant
+      cisco.aci.aci_tenant:
+    
+        description: "{{ new_tenant }} is created using ansible"
+
+    - name: Create a new vrf
+      cisco.aci.aci_vrf:
+     
+        vrf: "{{ new_vrf }}"
+        description: "{{ new_vrf }} is created using ansible"
+
+    - name: Create a new ap
+      cisco.aci.aci_ap:
+      
+        ap: "{{ new_ap }}"
+        description: "{{ new_ap }} is created using ansible"
+
+    - name: Create a new epg
+      cisco.aci.aci_epg:
+       
+        ap: "{{ new_ap }}"
+        epg: "{{ new_epg }}"
+        description: "{{ new_epg }} is created using ansible"
+
+    - name: Create a new bd
+      cisco.aci.aci_bd:
+        
+        bd: "{{ new_bd }}"
+        vrf: "{{ new_vrf }}"
+        description: "{{ new_bd }} is created using ansible"
+
+    - name: Add a new physical domain to EPG binding
+      cisco.aci.aci_epg_to_domain:
+        
+        ap: "{{ new_ap }}"
+        epg: "{{ new_epg }}"
+        domain: phys_dom
+        domain_type: phys
