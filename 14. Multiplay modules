@@ -1,0 +1,163 @@
+ACI OBJECTS
+===============================================================
+devraj@DESKTOP-VSU0S4V:~/aci/vars$ nano aci_objects.yml
+---
+new_tenant: "Tenant1"
+state: "present"
+new_epg: "EPG_xyx"
+new_ap: "AP_xyz"
+new_vrf: "VRF_xyz"
+new_bd: "BD_xyz"
+filter_name: "Web_Filter"
+entry_name: "HTTP_Entry"
+validate_certs: "false"
+contract_usage: "consumer"
+new_contract: "AnyAnyContract"
+new_subject: "AnyAnySubject"
+new_filter: "AnyAnyFilter"
+new_entry: "web"
+
+===============================================
+devraj@DESKTOP-VSU0S4V:~/aci/vars$ nano host_vars.yml
+---
+ansible_hostname: "192.168.84.10" #your hostname
+ansible_username: "admin" #your host IP
+ansible_password: "cisco123" #your host password
+
+===================================================
+devraj@DESKTOP-VSU0S4V:~/aci$ nano multiplay_module.yml
+---
+- name: "PLAY 1: DEFINE THE TENANT OBJECTS"
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tags: tenant-objects
+
+  module_defaults:
+    group/cisco.aci.all:
+      host: "{{ ansible_hostname }}"
+      username: "{{ ansible_username }}"
+      password: "{{ ansible_password }}"
+      tenant: "{{ new_tenant }}"
+      state: "{{state}}"
+      validate_certs: false
+    
+  vars_files:
+    - ./vars/aci_objects.yml
+    - ./vars/host_vars.yml
+
+  vars_prompt:
+  - name: "host"
+    prompt: "Enter the IP address of the APIC"
+    default: "192.168.84.10"
+    private: no
+
+  - name: "username"
+    prompt: "Enter the APIC username"
+    default: "admin"
+    private: no
+
+  - name: "password"
+    prompt: "Enter the APIC password"
+    private: yes   
+    
+  tasks:
+    - name: "Create a new Tenant"
+      cisco.aci.aci_tenant:
+        description: This Tenant was created using Ansible
+
+    - name: "Create a new AP"
+      cisco.aci.aci_ap:
+        ap: "{{new_ap}}"
+        description: This Application profile was created using Ansible
+
+    - name: "Create a new EPG"
+      cisco.aci.aci_epg:
+        ap: "{{new_ap}}"
+        epg: "{{new_epg}}"
+        description: This EPG was created using Ansible
+
+    - name: "Create a new VRF"
+      cisco.aci.aci_vrf:
+        vrf: "{{new_vrf}}"
+        description: This VRF was created using Ansible
+
+    - name: "Create a new BD"
+      cisco.aci.aci_bd:
+        vrf: "{{new_vrf}}"
+        bd: "{{new_bd}}"
+        description: This BD was created using Ansible
+
+- name: "PLAY 2: CREATE SECURITY POLICY FOR THE EPG"
+  hosts: localhost
+  connection: local
+  tags: security_objects
+
+  module_defaults:
+    group/cisco.aci.all:
+      host: "{{ ansible_hostname }}"
+      username: "{{ ansible_username }}"
+      password: "{{ ansible_password }}"
+      tenant: "{{ new_tenant }}"
+      state: "{{ state }}"
+      validate_certs: "{{ validate_certs }}"
+
+  vars_files:
+    - ./vars/aci_objects.yml
+    - ./vars/host_vars.yml
+
+  vars_prompt:
+  - name: "host"
+    prompt: "Enter the IP address of the APIC"
+    default: "192.168.84.10"
+    private: no
+
+  - name: "username"
+    prompt: "Enter the APIC username"
+    default: "admin"
+    private: no
+
+  - name: "password"
+    prompt: "Enter the APIC password"
+    private: yes
+
+  tasks:
+    - name: "TASK 01: Create A New Contract"
+      cisco.aci.aci_contract:
+        contract: "{{ new_contract }}"
+        scope: "context"
+        description: "Contract was Created Using Ansible"
+
+    - name: "TASK 02: Create A New Contract's Subject"
+      cisco.aci.aci_contract_subject:
+        contract: "{{ new_contract }}"
+        subject: "{{ new_subject }}"
+
+    - name: "TASK 03: Create A New Filter" 
+      cisco.aci.aci_filter:
+        filter: "{{new_filter}}"
+        descr: "Filter was Created Using Ansible"
+
+    - name: "TASK 04: Create A New Filter's Entry"
+      cisco.aci.aci_filter_entry:
+        filter: "{{new_filter}}"
+        entry: "{{new_entry}}"
+        ether_type: "ip"
+        ip_protocol: "tcp"
+        dst_port_start: "443"
+        dst_port_end: "443"
+
+    - name: "TASK 05: Associate the Subject with the Filter"
+      cisco.aci.aci_contract_subject_to_filter:
+        contract: "{{ new_contract }}"
+        subject: "{{ new_subject }}"
+        filter: "{{ new_filter }}"
+
+    - name: "TASK 06: Associate The EPG to the Contract"
+      cisco.aci.aci_epg_to_contract:
+        ap: "{{ new_ap }}"
+        epg: "{{ new_epg}}"
+        contract: "{{ new_contract }}"
+        contract_type: "{{ contract_usage }}"
+
+
